@@ -16,7 +16,7 @@ class Mailgun:
     MAILGUN_API_KEY = os.environ.get("MAILGUN_API_KEY", None)
     MAILGUN_DOMAIN = os.environ.get("MAILGUN_DOMAIN", None)
 
-    FROM_TITLE = "Stores REST API"
+    FROM_TITLE = "REST API"
     FROM_EMAIL = f"postmaster@{MAILGUN_DOMAIN}"
 
     @classmethod

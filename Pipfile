@@ -13,6 +13,8 @@ marshmallow-sqlalchemy = "*"
 marshmallow = "*"
 requests = "*"
 python-dotenv = "*"
+flask-reuploaded = "*"
+flask-uploads = "*"
 
 [dev-packages]
 

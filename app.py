@@ -1,8 +1,9 @@
-import os
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from marshmallow import ValidationError
+from flask_uploads import configure_uploads
+from dotenv import load_dotenv
 
 from db import db
 from ma import ma
@@ -11,16 +12,19 @@ from resources.user import UserRegister, UserLogin, User, TokenRefresh, UserLogo
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
 from resources.confirmation import Confirmation, ConfirmationByUser
+from resources.image import ImageUpload, Image
+from libs.image_helper import IMAGE_SET
+
 
 app = Flask(__name__)
+load_dotenv(".env", verbose=True)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["PROPAGATE_EXCEPTIONS"] = True
-
-
-app.secret_key = os.environ.get(
-    "APP_SECRET_KEY"
-)  # could do app.config['JWT_SECRET_KEY'] if we prefer
+app.config.from_object("default_config")  # load default configs from default_config.py
+app.config.from_envvar(
+    "APPLICATION_SETTINGS"
+)  # override with config.py (APPLICATION_SETTINGS points to config.py)
+#patch_request_class(app, 10 * 1024 * 1024)  # restrict max upload image size to 10MB
+configure_uploads(app, IMAGE_SET)
 api = Api(app)
 
 
@@ -54,6 +58,8 @@ api.add_resource(TokenRefresh, "/refresh")
 api.add_resource(UserLogout, "/logout")
 api.add_resource(Confirmation, "/user_confirm/<string:confirmation_id>")
 api.add_resource(ConfirmationByUser, "/confirmation/user/<int:user_id>")
+api.add_resource(ImageUpload, "/upload/image")
+api.add_resource(Image, "/image/<string:filename>")
 
 if __name__ == "__main__":
     db.init_app(app)
